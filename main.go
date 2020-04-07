@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/AliyunContainerService/log-pilot/pilot"
 	log "github.com/Sirupsen/logrus"
+	"github.com/ToughLama/log-pilot/pilot"
 )
 
 func main() {
