@@ -2,11 +2,15 @@ package main
 
 import (
 	"flag"
-	"github.com/AliyunContainerService/log-pilot/pilot"
-	log "github.com/Sirupsen/logrus"
+	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
+	"time"
+
+	"github.com/AliyunContainerService/log-pilot/pilot"
+	log "github.com/Sirupsen/logrus"
 )
 
 func main() {
@@ -42,4 +46,20 @@ func main() {
 	}
 
 	log.Fatal(pilot.Run(string(b), baseDir))
+
+	// health check
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		started := time.Now()
+		duration := time.Now().Sub(started)
+		if duration.Seconds() > 10 {
+			w.WriteHeader(500)
+			w.Write([]byte(fmt.Sprintf("error: %v", duration.Seconds())))
+		} else {
+			w.WriteHeader(200)
+			w.Write([]byte("ok"))
+		}
+	})
+
+	http.ListenAndServe(":10250", nil)
+
 }
